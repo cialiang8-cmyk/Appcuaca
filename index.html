@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="WeatherNow - Professional Weather Forecast Application with real-time data from Open-Meteo API">
+    <title>WeatherNow — Professional Weather Forecast</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+
+        <!-- ============ HEADER ============ -->
+        <header class="header">
+            <div class="header-inner">
+                <div class="brand">
+                    <div class="brand-icon" id="brandIcon"></div>
+                    <span class="brand-name">Weather<span class="brand-accent">Now</span></span>
+                </div>
+
+                <div class="search-wrap">
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+                            <line x1="16.5" y1="16.5" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        <input type="text" id="searchInput" class="search-input" placeholder="Search for a city..." autocomplete="off" spellcheck="false">
+                        <button id="searchClear" class="search-clear" aria-label="Clear search">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <div class="search-spinner" id="searchSpinner"></div>
+                    </div>
+                    <div id="searchResults" class="search-dropdown"></div>
+                </div>
+
+                <button id="locationBtn" class="btn-location" title="Use my current location">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2C8.13 2 5 5.13 5 9C5 13.5 12 22 12 22S19 13.5 19 9C19 5.13 15.87 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    <span class="btn-text">My Location</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- ============ MAIN ============ -->
+        <main class="main">
+
+            <!-- Loading state -->
+            <div id="loadingState" class="state-loading">
+                <div class="loader">
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                    <div class="loader-ring"></div>
+                </div>
+                <p class="state-text">Fetching weather data…</p>
+            </div>
+
+            <!-- Error state -->
+            <div id="errorState" class="state-error" style="display:none;">
+                <div class="error-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L1 21H23L12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                        <line x1="12" y1="9" x2="12" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="17.5" r="1" fill="currentColor"/>
+                    </svg>
+                </div>
+                <p id="errorMessage" class="state-text error-text"></p>
+                <button id="retryBtn" class="btn-retry">Try Again</button>
+            </div>
+
+            <!-- Weather content -->
+            <div id="weatherContent" class="weather-content" style="display:none;">
+
+                <!-- ===== CURRENT WEATHER ===== -->
+                <section class="card current-weather">
+                    <div class="cw-top">
+                        <div class="cw-location">
+                            <svg class="cw-pin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C8.13 2 5 5.13 5 9C5 13.5 12 22 12 22S19 13.5 19 9C19 5.13 15.87 2 12 2Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+                                <circle cx="12" cy="9" r="2.5" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                            <div class="cw-location-text">
+                                <h2 id="cityName" class="cw-city"></h2>
+                                <p id="countryName" class="cw-country"></p>
+                            </div>
+                        </div>
+                        <div class="cw-datetime">
+                            <p id="localTime" class="cw-time"></p>
+                            <p id="localDate" class="cw-date"></p>
+                        </div>
+                    </div>
+
+                    <div class="cw-main">
+                        <div id="currentWeatherIcon" class="cw-icon"></div>
+                        <div class="cw-temp">
+                            <span id="currentTemp" class="cw-temp-value"></span>
+                            <span class="cw-temp-unit">°C</span>
+                        </div>
+                    </div>
+
+                    <div class="cw-bottom">
+                        <p id="weatherDescription" class="cw-condition"></p>
+                        <p id="feelsLike" class="cw-feels"></p>
+                    </div>
+
+                    <div class="cw-footer">
+                        <span id="lastUpdated" class="cw-updated"></span>
+                    </div>
+                </section>
+
+                <!-- ===== STATISTICS ===== -->
+                <section class="stats-grid" id="statsGrid">
+                    <!-- Generated by JavaScript -->
+                </section>
+
+                <!-- ===== HOURLY FORECAST ===== -->
+                <section class="card hourly-section">
+                    <div class="section-header">
+                        <h3 class="section-title">Hourly Forecast</h3>
+                        <span class="section-subtitle">Next 24 hours</span>
+                    </div>
+                    <div id="hourlyContainer" class="hourly-scroll">
+                        <!-- Generated by JavaScript -->
+                    </div>
+                </section>
+
+                <!-- ===== 7-DAY FORECAST ===== -->
+                <section class="card daily-section">
+                    <div class="section-header">
+                        <h3 class="section-title">7-Day Forecast</h3>
+                    </div>
+                    <div id="dailyContainer" class="daily-list">
+                        <!-- Generated by JavaScript -->
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>WeatherNow · Powered by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> public API</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
